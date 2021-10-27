@@ -1,0 +1,26 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('pull code') {
+            steps {
+                git branch: 'main', credentialsId: 'c6213123-6b37-4836-9729-9f6c49fa369f', url: 'git@github.com:ervin-meng/go-project.git'
+            }
+        }
+        stage('build image') {
+            steps {
+                echo 'build image'
+            }
+        }
+        stage('upload image') {
+            steps {
+                echo 'upload image'
+            }
+        }
+        stage('deploy') {
+            steps {
+                echo 'deploy'
+            }
+        }
+    }
+}
