@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rpc-user-deployment
+  labels:
+    app: rpc-user
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rpc-user
+  template:
+    metadata:
+      labels:
+        app: jenkins-demo
+    spec:
+      containers:
+        - name: rpc-user
+          image: ervinmeng/go-project:<BUILD_TAG>
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8501
+          env:
+            - name: branch
+              value: <BRANCH_NAME>

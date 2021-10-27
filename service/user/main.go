@@ -8,7 +8,6 @@ import (
 	"go-project/common/infrastructure/middleware/logger"
 	"go-project/common/infrastructure/middleware/register"
 	"go-project/common/infrastructure/middleware/tracer"
-	"go-project/common/infrastructure/utils"
 	"go-project/common/proto"
 	"go-project/service/user/domain/server"
 	"go-project/service/user/global"
@@ -40,8 +39,10 @@ func main() {
 	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
 	//获取服务ID
 	id := fmt.Sprintf("%s", uuid.NewV4())
-	//获取服务端口
-	port := utils.GetPort()
+	//获取动态服务端口，不适用于K8S
+	//port := utils.GetPort()
+	//静态服务端口，适用于K8S
+	port := 9501
 	//创建服务
 	RpcServer := grpc.NewServer(grpc.UnaryInterceptor(tracer.OpenTracingGRPCServerInterceptor())) //proto.UnimplementedUserServer{}
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", "0.0.0.0", port))
@@ -109,7 +110,6 @@ func InitConfig() {
 }
 
 func InitDb() {
-	//dsn := "root:123456@tcp(127.0.0.1:3305)/go_project?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local",
 		global.Config.Mysql.User,
 		global.Config.Mysql.Password,
