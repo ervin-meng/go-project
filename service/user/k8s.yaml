@@ -12,7 +12,7 @@ spec:
   template:
     metadata:
       labels:
-        app: jenkins-demo
+        app: rpc-user
     spec:
       containers:
         - name: rpc-user
