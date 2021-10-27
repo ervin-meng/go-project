@@ -1,0 +1,10 @@
+name: 'api-user'
+port: 8501
+service:
+  user:
+    ip: '127.0.0.1'
+    port: 9501
+    name: 'service-user'
+consul:
+  host: '127.0.0.1'
+  port: 8500

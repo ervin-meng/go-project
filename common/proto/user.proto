@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+option go_package = ".;proto";
+
+service User {
+    rpc List(UserListRequest) returns(UserListResponse);
+    rpc Detail(UserDetailRequest) returns(UserDetailResponse);
+}
+
+message UserListRequest {
+    uint32 page = 1;
+    uint32 pageSize = 2;
+}
+
+message UserListResponse {
+    int32 total = 1;
+    repeated UserInfo list = 2;
+}
+
+message UserInfo {
+    int32 id = 1;
+    string nickName =2;
+}
+
+message UserDetailRequest {
+    int32 id = 1;
+}
+
+message UserDetailResponse {
+    int32 id = 1;
+    string nickName =2;
+}

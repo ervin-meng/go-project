@@ -1,0 +1,27 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+option go_package = ".;proto";
+
+service Inventory {
+    rpc Update(InventoryUpdateRequest) returns(google.protobuf.Empty);
+    rpc MultiUpdate(InventoryMultiUpdateRequest) returns (google.protobuf.Empty);
+    rpc Detail(InventoryDetailRequest) returns(InventoryDetailResponse);
+}
+
+message InventoryUpdateRequest {
+    int32 goodsId = 1;
+    int32 num = 2;
+}
+
+message InventoryMultiUpdateRequest {
+    repeated InventoryUpdateRequest list = 1;
+}
+
+message InventoryDetailRequest {
+    int32 goodsId = 1;
+}
+
+message InventoryDetailResponse {
+    int32 goodsId = 1;
+    int32 num = 2;
+}
