@@ -232,6 +232,8 @@ func InitUserServiceClient() {
 
 	opts = append(opts, grpc.WithInsecure())
 
+	fmt.Println(global.Config.Service.User.IP, global.Config.Service.User.Port)
+
 	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
 
 	if e != nil {
