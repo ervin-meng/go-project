@@ -15,7 +15,7 @@ spec:
         app: rpc-user
     spec:
       imagePullSecrets:
-        - tencentyun
+        - name: tencentyun
       containers:
         - name: rpc-user
           image: ccr.ccs.tencentyun.com/ervinmeng/go-project:<BUILD_TAG>
