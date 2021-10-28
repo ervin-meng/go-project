@@ -12,7 +12,7 @@ pipeline {
         stage('build image') {
             steps {
                 //sh "docker build -t ervinmeng/go-project:${build_tag} -f ./service/user/Dockerfile ."
-                sh "docker build -t ccr.ccs.tencentyun.com/ervinmeng/go-project:${build_tag} -f ./service/user/Dockerfile ."
+                sh "docker build -t ccr.ccs.tencentyun.com/ervinmeng/go-rpc-user:${build_tag} -f ./service/user/Dockerfile ."
                 sh "docker image prune -f"
             }
         }
@@ -26,7 +26,7 @@ pipeline {
 
                 withCredentials([usernamePassword(credentialsId: 'tencenthub', passwordVariable: 'tencenthubPassword', usernameVariable: 'tencenthubUser')]) {
                     sh "docker login -u ${tencenthubUser} -p ${tencenthubPassword} ccr.ccs.tencentyun.com"
-                    sh "docker push ccr.ccs.tencentyun.com/ervinmeng/go-project:${build_tag}"
+                    sh "docker push ccr.ccs.tencentyun.com/ervinmeng/go-rpc-user:${build_tag}"
                 }
             }
         }

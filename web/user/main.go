@@ -20,10 +20,10 @@ import (
 	"github.com/opentracing/opentracing-go"
 	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
+	"go-project/common/infrastructure/event"
 	"go-project/common/infrastructure/middleware/logger"
 	"go-project/common/infrastructure/middleware/register"
 	"go-project/common/infrastructure/middleware/tracer"
-	"go-project/common/infrastructure/utils"
 	"go-project/common/proto"
 	"go-project/web/user/global"
 	"go-project/web/user/handler"
@@ -51,32 +51,23 @@ func main() {
 	InitRouter()
 	//初始化请求处理句柄
 	InitHandler()
-	//初始化服务注册器
-	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
-	//获取服务ID
-	id := fmt.Sprintf("%s", uuid.NewV4())
-	//获取服务端口
-	port := utils.GetPort()
-	//注册到注册中心
-	register.ServiceRegister(register.HTTPService, id, global.Config.Name, "192.168.0.102", port)
+	//获取动态端口
+	//port := utils.GetPort()
+	port := global.Config.Port
+	//注册服务
+	InitRegister(port)
 	//启动服务
 	go func() {
 		_ = app.Run(fmt.Sprintf(":%d", port))
 	}()
-	//服务优雅退出
+	//监听信号
 	quit := make(chan os.Signal)
 
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit
-
-	err := register.ServiceDeregister(id)
-
-	if err != nil {
-		logger.Global.Info("API服务注销失败：", err)
-	} else {
-		logger.Global.Info("API服务注销成功")
-	}
+	//触发事件
+	event.Trigger(event.ServiceTerm)
 }
 
 func InitConfigWithCenter() {
@@ -203,6 +194,25 @@ func InitHandler() {
 	userRouter.GET("detail", handler.Detail)
 }
 
+func InitRegister(port int) {
+	//初始化服务注册器
+	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
+	//获取服务ID
+	id := fmt.Sprintf("%s", uuid.NewV4())
+	//注册到注册中心
+	register.ServiceRegister(register.HTTPService, id, global.Config.Name, global.Config.IP, port)
+	//注册事件句柄
+	event.RegisterHandler(event.ServiceTerm, func() {
+		err := register.ServiceDeregister(id)
+
+		if err != nil {
+			logger.Global.Info("API服务注销失败：", err)
+		} else {
+			logger.Global.Info("API服务注销成功")
+		}
+	})
+}
+
 func InitConfig() {
 	viper.AutomaticEnv()
 	configFIleEnv := viper.GetString("API_ENV")
@@ -210,7 +220,7 @@ func InitConfig() {
 		configFIleEnv = "pro"
 	}
 	configFilePrefix := "config"
-	configFileName := fmt.Sprintf("web/user/config/%s-%s.yml", configFilePrefix, configFIleEnv)
+	configFileName := fmt.Sprintf("config/%s-%s.yml", configFilePrefix, configFIleEnv)
 
 	v := viper.New()
 	v.SetConfigFile(configFileName)

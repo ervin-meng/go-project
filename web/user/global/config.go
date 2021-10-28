@@ -17,6 +17,7 @@ type ConsulConfig struct {
 
 type ApiConfig struct {
 	Name    string        `mapstructure:"name" json:"name"`
+	IP      string        `mapstructure:"ip" json:"ip"`
 	Port    int           `mapstructure:"port" json:"port"`
 	Service ServiceConfig `mapstructure:"service" json:"service"`
 	Consul  ConsulConfig  `mapstructure:"consul" json:"consul"`

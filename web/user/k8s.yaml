@@ -1,27 +1,27 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rpc-user-deployment
+  name: web-user-deployment
   labels:
-    app: rpc-user
+    app: web-user
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: rpc-user
+      app: web-user
   template:
     metadata:
       labels:
-        app: rpc-user
+        app: web-user
     spec:
       imagePullSecrets:
         - name: tencentyun
       containers:
-        - name: rpc-user
-          image: ccr.ccs.tencentyun.com/ervinmeng/go-rpc-user:<BUILD_TAG>
+        - name: web-user
+          image: ccr.ccs.tencentyun.com/ervinmeng/go-web-user:<BUILD_TAG>
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 9501
+            - containerPort: 8501
           env:
             - name: branch
               value: <BRANCH_NAME>
@@ -29,10 +29,10 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: rpc-user-service
+  name: web-user-service
 spec:
   selector:
-    app: rpc-user
+    app: web-user
   ports:
-    - port: 9501
-      targetPort: 9501
+    - port: 8501
+      targetPort: 8501
