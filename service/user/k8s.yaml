@@ -21,7 +21,7 @@ spec:
           image: ccr.ccs.tencentyun.com/ervinmeng/go-project:<BUILD_TAG>
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 8501
+            - containerPort: 9501
           env:
             - name: branch
               value: <BRANCH_NAME>
@@ -34,5 +34,5 @@ spec:
   selector:
     app: rpc-user
   ports:
-    - port: 8501
-      targetPort: 8501
+    - port: 9501
+      targetPort: 9501

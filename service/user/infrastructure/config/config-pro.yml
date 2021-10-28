@@ -1,4 +1,6 @@
 name: 'service-user'
+ip: 192.168.0.100
+port: 9501
 mysql:
   host: '192.168.0.100'
   port: 3305
