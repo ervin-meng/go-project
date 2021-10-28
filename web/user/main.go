@@ -44,7 +44,7 @@ func main() {
 	//初始化链路追踪器
 	tracer.Init("user-api")
 	//初始化用户服务客户端
-	InitUserServiceClientWithLB()
+	InitUserServiceClient()
 	//初始化限流器和熔断器
 	InitSentinel()
 	//初始化路由器
@@ -138,6 +138,38 @@ func InitConfigWithCenter() {
 	}()
 }
 
+func InitConfig() {
+	viper.AutomaticEnv()
+	configFIleEnv := viper.GetString("API_ENV")
+	if configFIleEnv == "" {
+		configFIleEnv = "pro"
+	}
+	configFilePrefix := "config"
+	configFileName := fmt.Sprintf("config/%s-%s.yml", configFilePrefix, configFIleEnv)
+
+	v := viper.New()
+	v.SetConfigFile(configFileName)
+
+	if err := v.ReadInConfig(); err != nil {
+		panic(err)
+	}
+
+	global.Config = &global.ApiConfig{}
+
+	if err := v.Unmarshal(global.Config); err != nil {
+		panic(err)
+	}
+
+	fmt.Println(*global.Config)
+
+	v.WatchConfig()
+	v.OnConfigChange(func(e fsnotify.Event) {
+		_ = v.ReadInConfig()
+		_ = v.Unmarshal(global.Config)
+		fmt.Println(global.Config)
+	})
+}
+
 func InitUserServiceClientWithLB() {
 	consulConfig := global.Config.Consul
 	userConn, err := grpc.Dial(
@@ -149,6 +181,61 @@ func InitUserServiceClientWithLB() {
 
 	if err != nil {
 		logger.Global.Fatal("用户服务连接失败")
+	}
+
+	global.UserServiceClient = proto.NewUserClient(userConn)
+}
+
+func InitUserServiceClientWithCenter() {
+	//从注册中心获取用户服务信息
+	consulConfig := global.Config.Consul
+
+	cfg := api.DefaultConfig()
+	cfg.Address = fmt.Sprintf("%s:%d", consulConfig.IP, consulConfig.Port)
+
+	consulClient, err := api.NewClient(cfg)
+
+	if err != nil {
+		panic(err)
+	}
+
+	serviceFilter := fmt.Sprintf("Service == \"%s\"", global.Config.Service.User.Name)
+
+	service, err := consulClient.Agent().ServicesWithFilter(serviceFilter)
+
+	if err != nil {
+		panic(err)
+	}
+
+	for _, value := range service {
+		global.Config.Service.User.IP = value.Address
+		global.Config.Service.User.Port = value.Port
+		break
+	}
+
+	//创建gRpc客户端
+	var opts []grpc.DialOption
+
+	opts = append(opts, grpc.WithInsecure())
+
+	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
+
+	if e != nil {
+		panic(e)
+	}
+
+	global.UserServiceClient = proto.NewUserClient(userConn)
+}
+
+func InitUserServiceClient() {
+	var opts []grpc.DialOption
+
+	opts = append(opts, grpc.WithInsecure())
+
+	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
+
+	if e != nil {
+		panic(e)
 	}
 
 	global.UserServiceClient = proto.NewUserClient(userConn)
@@ -211,77 +298,4 @@ func InitRegister(port int) {
 			logger.Global.Info("API服务注销成功")
 		}
 	})
-}
-
-func InitConfig() {
-	viper.AutomaticEnv()
-	configFIleEnv := viper.GetString("API_ENV")
-	if configFIleEnv == "" {
-		configFIleEnv = "pro"
-	}
-	configFilePrefix := "config"
-	configFileName := fmt.Sprintf("config/%s-%s.yml", configFilePrefix, configFIleEnv)
-
-	v := viper.New()
-	v.SetConfigFile(configFileName)
-
-	if err := v.ReadInConfig(); err != nil {
-		panic(err)
-	}
-
-	global.Config = &global.ApiConfig{}
-
-	if err := v.Unmarshal(global.Config); err != nil {
-		panic(err)
-	}
-
-	fmt.Println(*global.Config)
-
-	v.WatchConfig()
-	v.OnConfigChange(func(e fsnotify.Event) {
-		_ = v.ReadInConfig()
-		_ = v.Unmarshal(global.Config)
-		fmt.Println(global.Config)
-	})
-}
-
-func InitUserServiceClient() {
-	//从注册中心获取用户服务信息
-	consulConfig := global.Config.Consul
-
-	cfg := api.DefaultConfig()
-	cfg.Address = fmt.Sprintf("%s:%d", consulConfig.IP, consulConfig.Port)
-
-	consulClient, err := api.NewClient(cfg)
-
-	if err != nil {
-		panic(err)
-	}
-
-	serviceFilter := fmt.Sprintf("Service == \"%s\"", global.Config.Service.User.Name)
-
-	service, err := consulClient.Agent().ServicesWithFilter(serviceFilter)
-
-	if err != nil {
-		panic(err)
-	}
-
-	for _, value := range service {
-		global.Config.Service.User.IP = value.Address
-		global.Config.Service.User.Port = value.Port
-		break
-	}
-
-	//创建gRpc客户端
-	var opts []grpc.DialOption
-
-	opts = append(opts, grpc.WithInsecure())
-
-	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
-
-	if e != nil {
-		panic(e)
-	}
-
-	global.UserServiceClient = proto.NewUserClient(userConn)
 }
