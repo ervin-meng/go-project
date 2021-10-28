@@ -25,3 +25,14 @@ spec:
           env:
             - name: branch
               value: <BRANCH_NAME>
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: rpc-user-service
+spec:
+  selector:
+    app: rpc-user
+  ports:
+    - port: 8501
+      targetPort: 8501
