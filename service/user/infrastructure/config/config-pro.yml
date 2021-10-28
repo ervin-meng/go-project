@@ -1,10 +1,10 @@
 name: 'service-user'
 mysql:
-  host: '192.168.0.102'
+  host: '192.168.0.100'
   port: 3305
   db: 'go_project'
   user: 'root'
   password: '123456'
 consul:
-  ip: '192.168.0.102'
+  ip: '192.168.0.100'
   port: 8500
