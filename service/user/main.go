@@ -2,13 +2,13 @@ package main
 
 import (
 	"fmt"
+	"github.com/ervin-meng/go-conch/infrastructure/event"
+	"github.com/ervin-meng/go-conch/infrastructure/middleware/logger"
+	"github.com/ervin-meng/go-conch/infrastructure/middleware/register"
+	"github.com/ervin-meng/go-conch/infrastructure/middleware/tracer"
 	"github.com/fsnotify/fsnotify"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"
-	"go-project/common/infrastructure/event"
-	"go-project/common/infrastructure/middleware/logger"
-	"go-project/common/infrastructure/middleware/register"
-	"go-project/common/infrastructure/middleware/tracer"
 	"go-project/common/proto"
 	"go-project/service/user/domain/server"
 	"go-project/service/user/global"

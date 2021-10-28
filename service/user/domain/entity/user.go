@@ -1,8 +1,6 @@
 package entity
 
-import (
-	"go-project/common/domain"
-)
+import "github.com/ervin-meng/go-conch/domain"
 
 type User struct {
 	domain.Entity
