@@ -19,6 +19,7 @@ spec:
       containers:
         - name: rpc-user
           image: ccr.ccs.tencentyun.com/ervinmeng/go-project:<BUILD_TAG>
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 8501
           env:
