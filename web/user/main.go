@@ -232,9 +232,9 @@ func InitUserServiceClient() {
 
 	opts = append(opts, grpc.WithInsecure())
 
-	fmt.Println(global.Config.Service.User.IP, global.Config.Service.User.Port)
+	fmt.Println("rpc-user-service", 9501)
 
-	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
+	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", "rpc-user-service", 9501), opts...)
 
 	if e != nil {
 		panic(e)
