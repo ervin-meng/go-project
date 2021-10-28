@@ -79,7 +79,7 @@ func InitConfigWithCenter() {
 		configFIleEnv = "pro"
 	}
 
-	configFileName := fmt.Sprintf("web/user/config/nacos-%s.yml", configFIleEnv)
+	configFileName := fmt.Sprintf("config/nacos-%s.yml", configFIleEnv)
 
 	v := viper.New()
 
@@ -106,8 +106,8 @@ func InitConfigWithCenter() {
 		NamespaceId:         nacosConfig.NamespaceId,
 		TimeoutMs:           5000,
 		NotLoadCacheAtStart: true,
-		LogDir:              "web/user/config/tmp/nacos/log",
-		CacheDir:            "web/user/config/tmp/nacos/cache",
+		LogDir:              "config/tmp/nacos/log",
+		CacheDir:            "config/tmp/nacos/cache",
 		RotateTime:          "1h",
 		MaxAge:              3,
 		LogLevel:            "debug",
