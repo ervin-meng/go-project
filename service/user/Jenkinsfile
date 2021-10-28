@@ -1,25 +1,40 @@
 pipeline {
     agent any
-
     stages {
         stage('pull code') {
             steps {
                 git branch: 'main', credentialsId: 'c6213123-6b37-4836-9729-9f6c49fa369f', url: 'git@github.com:ervin-meng/go-project.git'
+                script{
+                    build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                }
             }
         }
         stage('build image') {
             steps {
-                echo 'build image'
+                //sh "docker build -t ervinmeng/go-project:${build_tag} -f ./service/user/Dockerfile ."
+                sh "docker build -t ccr.ccs.tencentyun.com/ervinmeng/go-project:${build_tag} -f ./service/user/Dockerfile ."
+                sh "docker image prune -f"
             }
         }
-        stage('upload image') {
-            steps {
-                echo 'upload image'
+        stage("upload image") {
+            steps{
+                //dockerhub太慢了
+                //withCredentials([usernamePassword(credentialsId: 'dockerhub', passwordVariable: 'dockerhubPassword', usernameVariable: 'dockerhubUser')]) {
+                //    sh "docker login -u ${dockerhubUser} -p ${dockerhubPassword}"
+                //    sh "docker push docker.io/ervinmeng/go-project:${build_tag}"
+                //}
+
+                withCredentials([usernamePassword(credentialsId: 'tencenthub', passwordVariable: 'tencenthubPassword', usernameVariable: 'tencenthubUser')]) {
+                    sh "docker login -u ${tencenthubUser} -p ${tencenthubPassword} ccr.ccs.tencentyun.com"
+                    sh "docker push ccr.ccs.tencentyun.com/ervinmeng/go-project:${build_tag}"
+                }
             }
         }
-        stage('deploy') {
-            steps {
-                echo 'deploy'
+        stage("deploy") {
+            steps{
+                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' ./service/user/k8s.yaml"
+                sh "sed -i 's/<BRANCH_NAME>/pro/' ./service/user/k8s.yaml"
+                sh "/usr/local/bin/kubectl apply -f ./service/user/k8s.yaml -n rpc-user --kubeconfig=/root/kind-kubeconfig"
             }
         }
     }
