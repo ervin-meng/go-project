@@ -5,6 +5,7 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"
+	"go-project/common/infrastructure/event"
 	"go-project/common/infrastructure/middleware/logger"
 	"go-project/common/infrastructure/middleware/register"
 	"go-project/common/infrastructure/middleware/tracer"
@@ -35,26 +36,22 @@ func main() {
 	InitDb()
 	//初始化链路追踪中间件
 	tracer.Init(global.Config.Name)
-	//初始化注册中心
-	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
-	//获取动态服务端口，不适用于K8S
+	//获取动态服务端口
 	//port := utils.GetPort()
-	//静态服务端口，适用于K8S
+	//获取静态服务端口
 	port := global.Config.Port
 	//创建服务
-	RpcServer := grpc.NewServer(grpc.UnaryInterceptor(tracer.OpenTracingGRPCServerInterceptor())) //proto.UnimplementedUserServer{}
+	RpcServer := grpc.NewServer(grpc.UnaryInterceptor(tracer.OpenTracingGRPCServerInterceptor()))
+	//注册用户服务
+	proto.RegisterUserServer(RpcServer, &server.UserServer{})
+	//注册到服务发现中心
+	InitRegister(RpcServer, port)
+	//监听服务
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", "0.0.0.0", port))
 	if err != nil {
 		panic("failed to listen:" + err.Error())
 	}
-	//注册健康检查接口
-	grpc_health_v1.RegisterHealthServer(RpcServer, health.NewServer())
-	//注册用户服务接口
-	proto.RegisterUserServer(RpcServer, &server.UserServer{})
-	//注册到中心
-	id := fmt.Sprintf("%s", uuid.NewV4())
-	register.ServiceRegister(register.RPCService, id, global.Config.Name, global.Config.IP, port)
-	//监听服务
+
 	go func() {
 		err = RpcServer.Serve(lis)
 
@@ -62,20 +59,16 @@ func main() {
 			panic("failed to start:" + err.Error())
 		}
 	}()
-	//服务优雅退出
+
+	//监听信号量
 	quit := make(chan os.Signal)
 
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
 
 	<-quit
 
-	err = register.ServiceDeregister(id)
-
-	if err != nil {
-		logger.Global.Info("RPC服务注销失败：", err)
-	} else {
-		logger.Global.Info("RPC服务注销成功")
-	}
+	//触发服务退出事件
+	event.Trigger(event.ServiceTerm)
 }
 
 func InitConfig() {
@@ -129,5 +122,25 @@ func InitDb() {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
+	})
+}
+
+func InitRegister(RpcServer *grpc.Server, port int) {
+	//初始化注册中心
+	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
+	//注册健康检查接口
+	grpc_health_v1.RegisterHealthServer(RpcServer, health.NewServer())
+	//创建服务ID
+	id := fmt.Sprintf("%s", uuid.NewV4())
+	//注册到中心
+	register.ServiceRegister(register.RPCService, id, global.Config.Name, global.Config.IP, port)
+	//注册服务注销
+	event.RegisterHandler(event.ServiceTerm, func() {
+		err := register.ServiceDeregister(id)
+		if err != nil {
+			logger.Global.Info("RPC服务注销失败：", err)
+		} else {
+			logger.Global.Info("RPC服务注销成功")
+		}
 	})
 }
