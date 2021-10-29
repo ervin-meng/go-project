@@ -22,7 +22,6 @@ import (
 	"github.com/nacos-group/nacos-sdk-go/common/constant"
 	"github.com/nacos-group/nacos-sdk-go/vo"
 	"github.com/opentracing/opentracing-go"
-	uuid "github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 	"go-project/common/proto"
 	"go-project/web/user/global"
@@ -42,7 +41,7 @@ func main() {
 	//初始化配置
 	InitConfigWithCenter()
 	//初始化链路追踪器
-	tracer.Init("user-api")
+	tracer.Init(global.Config.Name)
 	//初始化用户服务客户端
 	InitUserServiceClient()
 	//初始化限流器和熔断器
@@ -51,20 +50,15 @@ func main() {
 	InitRouter()
 	//初始化请求处理句柄
 	InitHandler()
-	//获取动态端口
-	//port := utils.GetPort()
-	port := global.Config.Port
-	//注册服务
-	InitRegister(port)
+	//初始化注册中心
+	register.Init(register.HTTPService, global.Config.Name, global.Config.IP, global.Config.Port)
 	//启动服务
 	go func() {
-		_ = app.Run(fmt.Sprintf(":%d", port))
+		_ = app.Run(fmt.Sprintf(":%d", global.Config.Port))
 	}()
 	//监听信号
 	quit := make(chan os.Signal)
-
 	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-
 	<-quit
 	//触发事件
 	event.Trigger(event.ServiceTerm)
@@ -279,23 +273,4 @@ func InitHandler() {
 	})
 	userRouter.GET("list", handler.List)
 	userRouter.GET("detail", handler.Detail)
-}
-
-func InitRegister(port int) {
-	//初始化服务注册器
-	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
-	//获取服务ID
-	id := fmt.Sprintf("%s", uuid.NewV4())
-	//注册到注册中心
-	register.ServiceRegister(register.HTTPService, id, global.Config.Name, global.Config.IP, port)
-	//注册事件句柄
-	event.RegisterHandler(event.ServiceTerm, func() {
-		err := register.ServiceDeregister(id)
-
-		if err != nil {
-			logger.Global.Info("API服务注销失败：", err)
-		} else {
-			logger.Global.Info("API服务注销成功")
-		}
-	})
 }

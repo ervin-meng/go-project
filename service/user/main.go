@@ -7,7 +7,6 @@ import (
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/register"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/tracer"
 	"github.com/fsnotify/fsnotify"
-	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"
 	"go-project/common/proto"
 	"go-project/service/user/domain/server"
@@ -44,8 +43,10 @@ func main() {
 	RpcServer := grpc.NewServer(grpc.UnaryInterceptor(tracer.OpenTracingGRPCServerInterceptor()))
 	//注册用户服务
 	proto.RegisterUserServer(RpcServer, &server.UserServer{})
+	//注册健康检查接口
+	grpc_health_v1.RegisterHealthServer(RpcServer, health.NewServer())
 	//注册到服务发现中心
-	InitRegister(RpcServer, port)
+	register.Init(register.HTTPService, global.Config.Name, global.Config.Consul.IP, global.Config.Consul.Port)
 	//监听服务
 	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%d", "0.0.0.0", port))
 	if err != nil {
@@ -122,25 +123,5 @@ func InitDb() {
 		NamingStrategy: schema.NamingStrategy{
 			SingularTable: true,
 		},
-	})
-}
-
-func InitRegister(RpcServer *grpc.Server, port int) {
-	//初始化注册中心
-	register.Init(global.Config.Consul.IP, global.Config.Consul.Port)
-	//注册健康检查接口
-	grpc_health_v1.RegisterHealthServer(RpcServer, health.NewServer())
-	//创建服务ID
-	id := fmt.Sprintf("%s", uuid.NewV4())
-	//注册到中心
-	register.ServiceRegister(register.RPCService, id, global.Config.Name, global.Config.IP, port)
-	//注册服务注销
-	event.RegisterHandler(event.ServiceTerm, func() {
-		err := register.ServiceDeregister(id)
-		if err != nil {
-			logger.Global.Info("RPC服务注销失败：", err)
-		} else {
-			logger.Global.Info("RPC服务注销成功")
-		}
 	})
 }
