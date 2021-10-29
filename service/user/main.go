@@ -2,10 +2,10 @@ package main
 
 import (
 	"fmt"
-	"github.com/ervin-meng/go-conch/infrastructure/event"
-	"github.com/ervin-meng/go-conch/infrastructure/middleware/logger"
-	"github.com/ervin-meng/go-conch/infrastructure/middleware/register"
-	"github.com/ervin-meng/go-conch/infrastructure/middleware/tracer"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/event"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/logger"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/register"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/tracer"
 	"github.com/fsnotify/fsnotify"
 	"github.com/satori/go.uuid"
 	"github.com/spf13/viper"

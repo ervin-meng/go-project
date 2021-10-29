@@ -4,7 +4,7 @@ import (
 	"context"
 	sentinel "github.com/alibaba/sentinel-golang/api"
 	"github.com/alibaba/sentinel-golang/core/base"
-	"github.com/ervin-meng/go-conch/infrastructure/middleware/logger"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/logger"
 	"github.com/gin-gonic/gin"
 	"go-project/common/proto"
 	"go-project/web/user/global"

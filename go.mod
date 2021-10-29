@@ -4,7 +4,7 @@ go 1.15
 
 require (
 	github.com/alibaba/sentinel-golang v1.0.3
-	github.com/ervin-meng/go-conch v0.0.2
+	github.com/ervin-meng/go-stitch-monster v0.0.3
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.4
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645

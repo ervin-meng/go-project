@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/ervin-meng/go-conch/domain"
+import "github.com/ervin-meng/go-stitch-monster/domain"
 
 type Category struct {
 	domain.Entity

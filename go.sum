@@ -135,8 +135,10 @@ github.com/envoyproxy/go-control-plane v0.9.9-0.20210217033140-668b12f5399d/go.m
 github.com/envoyproxy/go-control-plane v0.9.9-0.20210512163311-63b5d3c536b0/go.mod h1:hliV/p42l8fGbc6Y9bQ70uLwIvmJyVE5k4iMKlh8wCQ=
 github.com/envoyproxy/go-control-plane v0.9.10-0.20210907150352-cf90f659a021/go.mod h1:AFq3mo9L8Lqqiid3OhADV3RfLJnjiw63cSpi+fDTRC0=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=
-github.com/ervin-meng/go-conch v0.0.2 h1:FW2J1PCwDxKP+nfO7NgM2/JhyR/ksFQKmoK5BmXHktg=
-github.com/ervin-meng/go-conch v0.0.2/go.mod h1:dGev2EmOHzfq99MiwwtHzw5rDNGjGMQa1G4NuODvlmc=
+github.com/ervin-meng/go-stitch-monster v0.0.2 h1:FW2J1PCwDxKP+nfO7NgM2/JhyR/ksFQKmoK5BmXHktg=
+github.com/ervin-meng/go-stitch-monster v0.0.2/go.mod h1:dGev2EmOHzfq99MiwwtHzw5rDNGjGMQa1G4NuODvlmc=
+github.com/ervin-meng/go-stitch-monster v0.0.3 h1:blfXupOQXTxSKqA4WEzXLbfW+Hxbkk+r00T0slrg5Gc=
+github.com/ervin-meng/go-stitch-monster v0.0.3/go.mod h1:QTsjVyyX1IjiIgseLz0ibFsaw0rlf2LjBK1en5s9Ni0=
 github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 h1:Ghm4eQYC0nEPnSJdVkTrXpu9KtoVCSo1hg7mtI7G9KU=
 github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239/go.mod h1:Gdwt2ce0yfBxPvZrHkprdPPTTS3N5rwmLE8T22KBXlw=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=
