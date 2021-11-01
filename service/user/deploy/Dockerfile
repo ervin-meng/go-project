@@ -16,9 +16,9 @@ FROM golang:1.15-alpine AS builder
 RUN go env -w GO111MODULE=on
 RUN go env -w GOPROXY=https://goproxy.cn,direct
 
-COPY . /go/src/go-project
+COPY .. /go/src/go-project
 
-WORKDIR /go/src/go-project/web/user
+WORKDIR /go/src/go-project/service/user
 
 RUN go install
 
@@ -26,7 +26,7 @@ FROM alpine:3.13
 
 COPY --from=builder /go/bin/user /bin/user-server
 
-COPY --from=builder /go/src/go-project/web/user/config /bin/config
+COPY --from=builder /go/src/go-project/service/user/infrastructure/config /bin/infrastructure/config
 
 WORKDIR /bin
 

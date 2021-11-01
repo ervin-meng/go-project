@@ -11,7 +11,7 @@ pipeline {
         }
         stage('build image') {
             steps {
-                sh "docker build -t ccr.ccs.tencentyun.com/ervinmeng/go-web-user:${build_tag} -f ./web/user/Dockerfile ."
+                sh "docker build -t ccr.ccs.tencentyun.com/ervinmeng/go-web-user:${build_tag} -f ./web/user/deploy/Dockerfile ."
                 sh "docker image prune -f"
             }
         }
@@ -25,9 +25,9 @@ pipeline {
         }
         stage("deploy") {
             steps{
-                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' ./web/user/k8s.yaml"
-                sh "sed -i 's/<BRANCH_NAME>/pro/' ./web/user/k8s.yaml"
-                sh "/usr/local/bin/kubectl apply -f ./web/user/k8s.yaml -n rpc-user --kubeconfig=/root/kind-kubeconfig"
+                sh "sed -i 's/<BUILD_TAG>/${build_tag}/' ./web/user/deploy/k8s.yaml"
+                sh "sed -i 's/<BRANCH_NAME>/pro/' ./web/user/deploy/k8s.yaml"
+                sh "/usr/local/bin/kubectl apply -f ./web/user/deploy/k8s.yaml -n rpc-user --kubeconfig=/root/kind-kubeconfig"
             }
         }
     }
