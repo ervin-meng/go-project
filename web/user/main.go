@@ -11,7 +11,6 @@ import (
 	_ "github.com/alibaba/sentinel-golang/logging"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/event"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/logger"
-	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/register"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/tracer"
 	"github.com/fsnotify/fsnotify"
 	"github.com/gin-gonic/gin"
@@ -51,17 +50,9 @@ func main() {
 	//初始化请求处理句柄
 	InitHandler()
 	//初始化注册中心
-	register.Init(register.HTTPService, global.Config.Name, global.Config.IP, global.Config.Port)
+	//register.Init(register.HTTPService, global.Config.Name, global.Config.IP, global.Config.Port)
 	//启动服务
-	go func() {
-		_ = app.Run(fmt.Sprintf(":%d", global.Config.Port))
-	}()
-	//监听信号
-	quit := make(chan os.Signal)
-	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-	<-quit
-	//触发事件
-	event.Trigger(event.ServiceTerm)
+	run()
 }
 
 func InitConfigWithCenter() {
@@ -273,4 +264,16 @@ func InitHandler() {
 	})
 	userRouter.GET("list", handler.List)
 	userRouter.GET("detail", handler.Detail)
+}
+
+func run() {
+	go func() {
+		_ = app.Run(fmt.Sprintf(":%d", global.Config.Port))
+	}()
+	//监听信号
+	quit := make(chan os.Signal)
+	signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
+	<-quit
+	//触发事件
+	event.Trigger(event.ServiceTerm)
 }
