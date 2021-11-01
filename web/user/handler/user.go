@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"go-project/common/proto"
 	"go-project/web/user/global"
+	"go-project/web/user/request"
 	"go-project/web/user/response"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -32,15 +33,24 @@ func HandleServiceErrorToHttp(err error, c *gin.Context) {
 }
 
 func List(ctx *gin.Context) {
+
 	e, b := sentinel.Entry("some-test", sentinel.WithTrafficType(base.Inbound))
 	if b != nil {
 		ctx.JSON(http.StatusTooManyRequests, gin.H{"msg": "请求过于频繁"})
 		return
 	}
 	e.Exit()
+
+	request := request.ListRequest{}
+
+	if err := ctx.ShouldBind(&request); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
 	//发送gRpc请求
 	tracerCtx, _ := ctx.Get("tracerCtx")
-	rsp, err := global.UserServiceClient.List(tracerCtx.(context.Context), &proto.UserListRequest{Page: 1, PageSize: 10})
+	rsp, err := global.UserServiceClient.List(tracerCtx.(context.Context), &proto.UserListRequest{Page: request.Page, PageSize: request.PageSize})
 
 	if err != nil {
 		logger.Global.Errorw("获取用户列表失败")
