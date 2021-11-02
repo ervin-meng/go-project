@@ -6,6 +6,7 @@ import (
 	"fmt"
 	sentinel "github.com/alibaba/sentinel-golang/api"
 	_ "github.com/alibaba/sentinel-golang/core/base"
+	"github.com/alibaba/sentinel-golang/core/circuitbreaker"
 	_ "github.com/alibaba/sentinel-golang/core/config"
 	"github.com/alibaba/sentinel-golang/core/flow"
 	_ "github.com/alibaba/sentinel-golang/logging"
@@ -231,11 +232,21 @@ func InitSentinel() {
 	//基于qps限流，Flow controller
 	_, _ = flow.LoadRules([]*flow.Rule{
 		{
-			Resource:               "some-test",
+			Resource:               "api-user-list",
 			TokenCalculateStrategy: flow.Direct, //直接计数
-			ControlBehavior:        flow.Reject, //匀速通过 //flow.Reject 不匀速
-			Threshold:              1,
-			StatIntervalInMs:       1000,
+			ControlBehavior:        flow.Reject,
+			Threshold:              50,
+			StatIntervalInMs:       2000,
+		},
+	})
+	//基于错误数熔断
+	_, _ = circuitbreaker.LoadRules([]*circuitbreaker.Rule{
+		{
+			Resource:       "rpc-user-list",
+			Strategy:       circuitbreaker.ErrorCount,
+			RetryTimeoutMs: 3000,
+			Threshold:      5,
+			StatIntervalMs: 5000,
 		},
 	})
 }
