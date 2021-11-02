@@ -235,8 +235,8 @@ func InitSentinel() {
 			Resource:               "api-user-list",
 			TokenCalculateStrategy: flow.Direct, //直接计数
 			ControlBehavior:        flow.Reject,
-			Threshold:              50,
-			StatIntervalInMs:       2000,
+			Threshold:              5,
+			StatIntervalInMs:       1000,
 		},
 	})
 	//基于错误数熔断
