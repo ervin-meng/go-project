@@ -8,7 +8,7 @@ require (
 	github.com/armon/go-metrics v0.3.10 // indirect
 	github.com/buger/jsonparser v1.1.1 // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
-	github.com/ervin-meng/go-stitch-monster v0.0.4
+	github.com/ervin-meng/go-stitch-monster v0.0.5-0.20211104023617-109dfcb6c704
 	github.com/fatih/color v1.13.0 // indirect
 	github.com/fsnotify/fsnotify v1.5.1
 	github.com/gin-gonic/gin v1.7.4

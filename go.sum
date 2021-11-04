@@ -151,6 +151,10 @@ github.com/ervin-meng/go-stitch-monster v0.0.3 h1:blfXupOQXTxSKqA4WEzXLbfW+Hxbkk
 github.com/ervin-meng/go-stitch-monster v0.0.3/go.mod h1:QTsjVyyX1IjiIgseLz0ibFsaw0rlf2LjBK1en5s9Ni0=
 github.com/ervin-meng/go-stitch-monster v0.0.4 h1:wg1s6hDBM3F+tmi+ndeYftMfKDfaWZ6kLfkFQpMJm50=
 github.com/ervin-meng/go-stitch-monster v0.0.4/go.mod h1:smkotocCsdi3eCPyL8OGo2EKGplBFy/bMeMZe2jyKp0=
+github.com/ervin-meng/go-stitch-monster v0.0.5-0.20211104022852-6ebc38ed18ee h1:3DxDMvlkU+i7sc02hjMUPhplwxwroSq970AHKmCKJ24=
+github.com/ervin-meng/go-stitch-monster v0.0.5-0.20211104022852-6ebc38ed18ee/go.mod h1:smkotocCsdi3eCPyL8OGo2EKGplBFy/bMeMZe2jyKp0=
+github.com/ervin-meng/go-stitch-monster v0.0.5-0.20211104023617-109dfcb6c704 h1:HVlkSSyXiI9ZA41JIB+dYr9Fb1Kqh0Z/ux5lsrU+8aw=
+github.com/ervin-meng/go-stitch-monster v0.0.5-0.20211104023617-109dfcb6c704/go.mod h1:smkotocCsdi3eCPyL8OGo2EKGplBFy/bMeMZe2jyKp0=
 github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239 h1:Ghm4eQYC0nEPnSJdVkTrXpu9KtoVCSo1hg7mtI7G9KU=
 github.com/fastly/go-utils v0.0.0-20180712184237-d95a45783239/go.mod h1:Gdwt2ce0yfBxPvZrHkprdPPTTS3N5rwmLE8T22KBXlw=
 github.com/fatih/color v1.7.0/go.mod h1:Zm6kSWBoL9eyXnKyktHP6abPY2pDugNf5KwzbycvMj4=

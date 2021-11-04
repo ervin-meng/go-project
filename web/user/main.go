@@ -10,6 +10,7 @@ import (
 	_ "github.com/alibaba/sentinel-golang/core/config"
 	"github.com/alibaba/sentinel-golang/core/flow"
 	_ "github.com/alibaba/sentinel-golang/logging"
+	"github.com/ervin-meng/go-stitch-monster/infrastructure/config"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/event"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/logger"
 	"github.com/ervin-meng/go-stitch-monster/infrastructure/middleware/tracer"
@@ -75,7 +76,7 @@ func InitConfigWithCenter() {
 		panic(err)
 	}
 
-	nacosConfig := global.NacosConfig{}
+	nacosConfig := config.NacosConfig{}
 
 	if err := v.Unmarshal(&nacosConfig); err != nil {
 		panic(err)
