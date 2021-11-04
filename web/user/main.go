@@ -159,6 +159,7 @@ func InitConfig() {
 
 func InitUserServiceClientWithLB() {
 	consulConfig := global.Config.Consul
+
 	userConn, err := grpc.Dial(
 		fmt.Sprintf("consul://%s:%d/%s?wait=14s", consulConfig.IP, consulConfig.Port, global.Config.Service.User.Name),
 		grpc.WithInsecure(),
@@ -218,6 +219,7 @@ func InitUserServiceClient() {
 	var opts []grpc.DialOption
 
 	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
 
 	userConn, e := grpc.Dial(fmt.Sprintf("%s:%d", global.Config.Service.User.IP, global.Config.Service.User.Port), opts...)
 
