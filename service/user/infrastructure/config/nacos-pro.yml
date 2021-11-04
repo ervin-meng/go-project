@@ -1,0 +1,5 @@
+ip: '192.168.0.100'
+port: 8848
+namespaceId: 'fe281935-c397-40f7-8fb2-4de3f88c6357'
+dataId: 'service-config'
+group: 'dev'
